@@ -1,0 +1,21 @@
+id,name,color
+1,beta barrels,#FF3987
+2,beta meanders,#a45a52
+3,beta sandwiches,#CD0000
+4,beta duplicates or obligate multimers,#610000
+5,beta complex topology,#ff0000
+6,alpha arrays,#00008B
+7,alpha bundles,#01A2CD
+8,alpha duplicates or obligate multimers,#95c6f5
+9,alpha superhelices,#4545FF
+10,alpha complex topology,#CBE1F5
+11,a+b two layers,#DFE834
+12,a+b three layers,#F5EAB3
+13,a+b four layers,#CEAB00
+14,a+b complex topology,#947D34
+15,a+b duplicates or obligate multimers,#CBF5DA
+16,a/b barrels,#04CD1B
+17,a/b three-layered sandwiches,#01611E
+18,mixed a+b and a/b,#37FF5D
+19,few secondary structure elements,#F5CBCB
+20,extended segments,#a020f0
