@@ -1,50 +1,88 @@
-name: Deploy static content to Pages
+# Name of the workflow
+name: Build and Deploy SvelteKit to GitHub Pages
 
+# Controls when the workflow will run
 on:
-  # Runs on pushes targeting the default branch
-  #  push:
-  #    branches: ['main']
+  # Triggers the workflow on push events but only for the main branch
+  push:
+#    branches:
+#      - main
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
-# Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-# Allow one concurrent deployment
-concurrency:
-  group: 'pages'
-  cancel-in-progress: true
-
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # Single deploy job since we're just deploying
+  # This job builds the SvelteKit application
+  build:
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
+    steps:
+      # --- Checkout and Setup ---
+
+      # Step 1: Check out the repository code so the workflow can access it
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Node.js. SvelteKit is a Node.js-based framework.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Specify the Node.js version
+          cache: 'npm' # Enable caching for npm dependencies to speed up subsequent builds
+
+      # --- Install Dependencies and Build ---
+
+      # Step 3: Install project dependencies using npm ci for a clean, reliable install
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Build the SvelteKit application.
+      # IMPORTANT: Your SvelteKit project must be configured to use `@sveltejs/adapter-static`.
+      # This command creates a 'build' directory with the static files.
+      - name: Build application
+        run: npm run build
+        env:
+          # The base path for your site, necessary for GitHub Pages if it's not at the root of the domain.
+          # The format is '/<repository-name>/'.
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+
+      # --- Prepare for Deployment ---
+
+      # Step 5: Configure GitHub Pages. This action prepares the environment for the artifact upload.
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # Step 6: Upload the build output as a GitHub Pages artifact.
+      # The 'deploy' job will use this artifact.
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          # The path to the directory containing the static files
+          path: './build'
+
+  # This job deploys the application to GitHub Pages
   deploy:
+    # This job depends on the 'build' job completing successfully
+    needs: build
+
+    # Grant permissions for the GITHUB_TOKEN to deploy to GitHub Pages
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+
+    # Specify the deployment environment
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
+      url: ${{ steps.deployment.outputs.page_url }} # The URL of the deployed site
+
+    runs-on: ubuntu-latest # Use the latest Ubuntu runner
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Set up Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 18
-          cache: 'npm'
-      - name: Install dependencies
-        run: npm install
-      - name: Build
-        run: npm run build
-      - name: Setup Pages
-        uses: actions/configure-pages@v3
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
-        with:
-          # Upload dist repository
-          path: './build'
+      # Step 1: Deploy the artifact to GitHub Pages.
+      # This action doesn't need any configuration as it automatically uses the artifact
+      # uploaded by the 'build' job.
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v4
