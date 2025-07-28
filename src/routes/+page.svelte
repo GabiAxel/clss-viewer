@@ -17,7 +17,7 @@
 
 	const showSelectedDomains = (selected, indice) => {
 		selectedDomains = selected
-		window.history.replaceState(undefined, '', '/#/' + _(indice).sortBy(i => parseInt(i)).join(','))
+		window.history.replaceState(undefined, '', '#/' + _(indice).sortBy(i => parseInt(i)).join(','))
 	}
 
 	const onclear = () => {

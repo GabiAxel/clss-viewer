@@ -54,7 +54,7 @@
 					}
 				} catch(e) {
 					console.error(e)
-					window.history.replaceState(undefined, '', '/#/')
+					window.history.replaceState(undefined, '', '#/')
 				}
 			})
 
