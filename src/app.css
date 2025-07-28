@@ -1,6 +1,4 @@
 @import 'tailwindcss';
-/*@plugin '@tailwindcss/forms';*/
-/*@plugin '@tailwindcss/typography';*/
 
 @import '@skeletonlabs/skeleton';
 @import '@skeletonlabs/skeleton/optional/presets';
@@ -10,4 +8,8 @@
 
 .wx-cell {
     cursor: pointer;
+}
+
+.wx-header-wrapper {
+    background-color: #2a2b2d;
 }

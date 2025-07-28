@@ -1,5 +1,5 @@
 <script>
-	import _, { map } from 'lodash-es'
+	import { map } from 'lodash-es'
 	import { scaleLinear } from 'd3-scale'
 
 	import { architectures, tsneData } from '$lib/data.js'
@@ -34,10 +34,10 @@
 				xScale: scaleLinear().domain([-1, 1]),
 				yScale: scaleLinear().domain([-1, 1]),
 				pointSize: 2,
-				backgroundColor: '#111827', // A dark gray background
+				backgroundColor: '#111827',
 				pointColor: map(architectures, 'color'),
 				colorBy: 'valueA',
-				opacity: [0.5, 1],
+				opacity: [0.1, 1],
 				opacityBy: 'valueB'
 			})
 
@@ -82,6 +82,9 @@
 
 	export const zoomToDomains = indice =>
 		scatterplot.zoomToPoints(indice, { transition: true })
+
+	export const selectIndice = indice =>
+		scatterplot.select(indice)
 
 </script>
 

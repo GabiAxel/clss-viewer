@@ -1,16 +1,16 @@
 <script>
-	import _, { findIndex, groupBy, map } from 'lodash-es';
+	import _, { groupBy, map } from 'lodash-es';
 
 	import { architectures, ecodHierarchy, tsneData } from '$lib/data.js'
 	import { Grid } from 'wx-svelte-grid'
 	import { onMount, tick } from 'svelte'
+	import ZoomButton from '$lib/ZoomButton.svelte';
+	import SelectButton from '$lib/SelectButton.svelte';
 
-	let { onselect } = $props()
-
-	const ecodIndex = _(tsneData).map(({ecod_id}, index) => [ecod_id, index]).fromPairs().value()
+	let { onzoomtoindice, onselectindice } = $props()
 
 	const fGroupDomains = groupBy(tsneData, 'f_id')
-	// console.log(fGroupDomains)
+
 	const getDomains = f_id =>
 		(fGroupDomains[f_id] || [])
 			.map(x => ({
@@ -40,6 +40,8 @@
 	}))
 
 	const treeColumns = [
+		{id: 'select', cell: SelectButton, width: 40},
+		{id: 'zoom', cell: ZoomButton, width: 40},
 		{id: 'label', header: {filter: 'text', clear: true}, flexgrow: 1, treetoggle: true}
 	]
 
@@ -55,23 +57,16 @@
 			api.getState().flatData.map(i => i.id).filter(i => i.startsWith('a.')).forEach(i => api.exec(ev.value ? 'open-row' : 'close-row', {id: i, nested: true}))
 		)
 
-		api.on('select-row', ({ id }) => {
-			id = id.toString()
-			let domainIds
-			if(id.startsWith('a.')) {
-				const a_id = parseInt(id.substring(2))
-				domainIds = tsneData.filter(x => x.a_id == a_id).map(x => x.ecod_id)
-			} else if(/^[0-9.]+$/.test(id)) {
-				domainIds = tsneData.filter(x => x.f_id == id || x.f_id.startsWith(`${id}.`)).map(x => x.ecod_id)
-			} else {
-				domainIds = [id]
-			}
-			const indice = domainIds.map(ecod_id => ecodIndex[ecod_id])
-			onselect(indice)
-		})
 	}
 </script>
 
 <div bind:this={treeWrapper} class="w-full h-full">
-	<Grid tree={true} data={hierarchyTree} columns={treeColumns} init={treeInit} multiselect={true}/>
+	<Grid
+		tree={true}
+		data={hierarchyTree}
+		columns={treeColumns}
+		init={treeInit}
+		multiselect={true}
+		onzoomtoindice={onzoomtoindice}
+		onselectindice={onselectindice}/>
 </div>
