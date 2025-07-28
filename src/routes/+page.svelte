@@ -4,6 +4,7 @@
 	import TsnePlot from '$lib/TsnePlot.svelte'
 	import { WillowDark } from 'wx-svelte-core'
 	import SelectedDomainsTable from '$lib/SelectedDomainsTable.svelte';
+	import _ from 'lodash-es'
 
 	let selectedDomains = $state([])
 	let tsnePlot
@@ -14,12 +15,14 @@
 	const selectIndice = indice =>
 		tsnePlot.selectIndice(indice)
 
-	const showSelectedDomains = selected =>
+	const showSelectedDomains = (selected, indice) => {
 		selectedDomains = selected
+		window.history.replaceState(undefined, '', '/#/' + _(indice).sortBy(i => parseInt(i)).join(','))
+	}
 
 	const onclear = () => {
 		selectIndice([])
-		selectedDomains = []
+		showSelectedDomains([], [])
 	}
 
 </script>
@@ -31,7 +34,7 @@
 				<EcodTree onzoomtoindice={zoomToDomains} onselectindice={selectIndice}/>
 			</div>
 			<div class="flex-1 overflow-hidden flex flex-col border-l-2 border-gray-500">
-				<div class="border-b-2 border-gray-500 p-2">Click to select a domain or <kbd class="kbd">Shift</kbd> + drag to select multiple domains. Mouse wheel to zoom in and out.</div>
+				<div class="border-b-2 border-gray-500 p-2">Click to select a domain or <strong>Shift</strong> + drag to select multiple domains. Mouse wheel to zoom in and out.</div>
 				<div class="flex-1">
 					<TsnePlot bind:this={tsnePlot} onselect={showSelectedDomains}/>
 				</div>

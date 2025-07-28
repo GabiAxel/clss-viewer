@@ -45,11 +45,22 @@
 				return [x, y, parseInt(a_id) - 1, 0]
 			})
 
-			scatterplot.draw(points)
+			scatterplot.draw(points).then(() => {
+				try {
+					const initialIndice = window.location.hash.substring(2).split(',').map(i => parseInt(i)).filter(i => !isNaN(i))
+					if(initialIndice.length > 0) {
+						zoomToDomains(initialIndice)
+						selectIndice(initialIndice)
+					}
+				} catch(e) {
+					console.error(e)
+					window.history.replaceState(undefined, '', '/#/')
+				}
+			})
 
 			scatterplot.subscribe('select', ({ points }) => {
 				const selected = points.map(i => tsneData[i])
-				onselect(selected)
+				onselect(selected, points)
 			})
 
 			const overlayFontSize = 12
@@ -71,6 +82,7 @@
 					}
 				}
 			})
+
 		})
 
 		window.addEventListener('resize', () => {
@@ -78,7 +90,10 @@
 			scatterplot.set({ width, height })
 			resizeLabelsCanvas()
 		})
+
 	})
+
+
 
 	export const zoomToDomains = indice =>
 		scatterplot.zoomToPoints(indice, { transition: true })
