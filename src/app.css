@@ -7,7 +7,7 @@
 @source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
 
 .wx-cell {
-    cursor: pointer;
+    cursor: default;
 }
 
 .wx-header-wrapper {

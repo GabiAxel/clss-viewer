@@ -4,6 +4,7 @@
 
 	import { architectures, tsneData } from '$lib/data.js'
 	import { onMount } from 'svelte'
+	import download from 'downloadjs';
 
 	let { onselect } = $props()
 
@@ -85,21 +86,24 @@
 
 		})
 
-		window.addEventListener('resize', () => {
-			const { width, height } = canvasWrapper.getBoundingClientRect()
-			scatterplot.set({ width, height })
-			resizeLabelsCanvas()
-		})
-
+		window.addEventListener('resize', () => redrawCanvas())
 	})
 
-
+	export const redrawCanvas = () => {
+		const { width, height } = canvasWrapper.getBoundingClientRect()
+		scatterplot.set({ width, height })
+		resizeLabelsCanvas()
+	}
 
 	export const zoomToDomains = indice =>
 		scatterplot.zoomToPoints(indice, { transition: true })
 
 	export const selectIndice = indice =>
 		scatterplot.select(indice)
+
+	export const exportImage = () => {
+		canvasPoints.toBlob(blob => download(blob, 'CLSS_tSNE.png', 'image/png'), 'image/png')
+	}
 
 </script>
 
