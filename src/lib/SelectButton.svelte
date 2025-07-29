@@ -11,4 +11,4 @@
 	}
 </script>
 
-<Button onclick={onClick} icon="wxi-check" title="Select domain(s)"/>
+<button onclick={onClick} title="Select domain(s)" aria-label="Select domain(s)"><i class="mdi mdi-check-circle"></i></button>

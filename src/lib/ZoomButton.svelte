@@ -11,4 +11,4 @@
 	}
 </script>
 
-<Button onclick={onClick} icon="wxi-search" title="Zoom to domain(s)"/>
+<button onclick={onClick} title="Zoom to domain(s)" aria-label="Zoom to domain(s)"><i class="mdi mdi-magnify-plus"></i></button>

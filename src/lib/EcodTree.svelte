@@ -66,7 +66,7 @@
 		data={hierarchyTree}
 		columns={treeColumns}
 		init={treeInit}
-		multiselect={true}
+		select={false}
 		onzoomtoindice={onzoomtoindice}
 		onselectindice={onselectindice}/>
 </div>
