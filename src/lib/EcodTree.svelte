@@ -1,13 +1,13 @@
 <script>
 	import _, { groupBy, map } from 'lodash-es';
-
 	import { architectures, ecodHierarchy, tsneData } from '$lib/data.js'
 	import { Grid } from 'wx-svelte-grid'
-	import { onMount, tick } from 'svelte'
-	import ZoomButton from '$lib/ZoomButton.svelte';
-	import SelectButton from '$lib/SelectButton.svelte';
+	import { Text } from 'wx-svelte-core'
+	import ZoomButton from '$lib/ZoomButton.svelte'
+	import SelectButton from '$lib/SelectButton.svelte'
 
 	let { onzoomtoindice, onselectindice } = $props()
+	let treeGrid = $state()
 
 	const fGroupDomains = groupBy(tsneData, 'f_id')
 
@@ -42,31 +42,34 @@
 	const treeColumns = [
 		{id: 'select', cell: SelectButton, width: 40},
 		{id: 'zoom', cell: ZoomButton, width: 40},
-		{id: 'label', header: {filter: 'text', clear: true}, flexgrow: 1, treetoggle: true}
+		{id: 'label', flexgrow: 1, treetoggle: true}
 	]
 
-	let treeWrapper
-
-	onMount(() => {
-		tick().then(() => treeWrapper.querySelector('.wx-header input').placeholder = 'Search by ECOD hierarchy, name or domain ID...')
-	})
-
-	const treeInit = api => {
-
-		api.on('filter-rows', ev =>
-			api.getState().flatData.map(i => i.id).filter(i => i.startsWith('a.')).forEach(i => api.exec(ev.value ? 'open-row' : 'close-row', {id: i, nested: true}))
-		)
-
+	const applyFilter = ({ value }) => {
+		treeGrid.getState().flatData.map(i => i.id).filter(i => i.startsWith('a.')).forEach(i => treeGrid.exec(value ? 'open-row' : 'close-row', {id: i, nested: true}))
+		treeGrid.exec('filter-rows', { filter: ({ label }) => label.includes(value) })
 	}
+
 </script>
 
-<div bind:this={treeWrapper} class="w-full h-full">
-	<Grid
-		tree={true}
-		data={hierarchyTree}
-		columns={treeColumns}
-		init={treeInit}
-		select={false}
-		onzoomtoindice={onzoomtoindice}
-		onselectindice={onselectindice}/>
+<div class="w-full h-full flex flex-col">
+	<div class="border-b-1 border-gray-700 p-1">
+		<Text icon="mdi mdi-magnify" placeholder="Search by ECOD hierarchy, name or domain ID..." onchange={applyFilter} clear/>
+	</div>
+	<div class="flex-1 overflow-hidden ecod-tree-grid">
+		<Grid
+			bind:this={treeGrid}
+			tree={true}
+			data={hierarchyTree}
+			columns={treeColumns}
+			select={false}
+			onzoomtoindice={onzoomtoindice}
+			onselectindice={onselectindice}/>
+	</div>
 </div>
+
+<style>
+	:global(.ecod-tree-grid .wx-header) {
+			display: none;
+	}
+</style>
