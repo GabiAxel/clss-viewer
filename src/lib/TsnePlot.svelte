@@ -6,13 +6,17 @@
 	import { onMount } from 'svelte'
 	import download from 'downloadjs';
 
-	let { onselect } = $props()
+	let { selectedIndice, onSelectIndice, onLoaded } = $props()
 
 	let canvasWrapper
-	let canvasPoints
-	let canvasLabels
+	let canvasPoints = $state()
+	let canvasLabels = $state()
 
-	let scatterplot
+	$effect(() => {
+		if(selectedIndice && window.scatterplot) {
+			window.scatterplot.select(selectedIndice, { preventEvent: true })
+		}
+	})
 
 	const resizeLabelsCanvas = () => {
 		const { width, height } = canvasWrapper.getBoundingClientRect()
@@ -28,7 +32,7 @@
 
 		const { width, height } = canvasPoints.getBoundingClientRect()
 		import('regl-scatterplot').then(({ default: createScatterplot }) => {
-			scatterplot = createScatterplot({
+			const scatterplot = createScatterplot({
 				canvas: canvasPoints,
 				width: width,
 				height: height,
@@ -38,7 +42,7 @@
 				backgroundColor: '#111827',
 				pointColor: map(architectures, 'color'),
 				colorBy: 'valueA',
-				opacity: [0.1, 1],
+				opacity: [0.5, 1],
 				opacityBy: 'valueB'
 			})
 
@@ -46,23 +50,17 @@
 				return [x, y, parseInt(a_id) - 1, 0]
 			})
 
+			window.scatterplot = scatterplot
+
 			scatterplot.draw(points).then(() => {
-				try {
-					const initialIndice = window.location.hash.substring(2).split(',').map(i => parseInt(i)).filter(i => !isNaN(i))
-					if(initialIndice.length > 0) {
-						zoomToDomains(initialIndice)
-						selectIndice(initialIndice)
-					}
-				} catch(e) {
-					console.error(e)
-					window.history.replaceState(undefined, '', '#/')
+				onLoaded()
+				if(selectedIndice.length > 0) {
+						zoomToDomains(selectedIndice)
+						scatterplot.select(selectedIndice, { preventEvent: true })
 				}
 			})
 
-			scatterplot.subscribe('select', ({ points }) => {
-				const selected = points.map(i => tsneData[i])
-				onselect(selected, points)
-			})
+			scatterplot.subscribe('select', ({ points }) => onSelectIndice(points))
 
 			const overlayFontSize = 12
 			const contextLabels = canvasLabels.getContext('2d')
@@ -91,15 +89,12 @@
 
 	export const redrawCanvas = () => {
 		const { width, height } = canvasWrapper.getBoundingClientRect()
-		scatterplot.set({ width, height })
+		window.scatterplot.set({ width, height })
 		resizeLabelsCanvas()
 	}
 
 	export const zoomToDomains = indice =>
-		scatterplot.zoomToPoints(indice, { transition: true })
-
-	export const selectIndice = indice =>
-		scatterplot.select(indice)
+		window.scatterplot.zoomToPoints(indice, { transition: true })
 
 	export const exportImage = () => {
 		canvasPoints.toBlob(blob => download(blob, 'CLSS_tSNE.png', 'image/png'), 'image/png')

@@ -2,8 +2,8 @@ import Papa from 'papaparse'
 import _, { filter, map } from 'lodash-es';
 
 import rawArchitectures from './assets/architectures.csv?raw'
-import rawEcodHierarchy from './assets/F40_hierarchy.cvs?raw'
-import rawTsneData from './assets/F40-tsne-reduced.csv?raw'
+import rawEcodHierarchy from './assets/F100_hierarchy.cvs?raw'
+import rawTsneData from './assets/F100-tsne-reduced.csv?raw'
 
 export const architectures = Papa.parse(rawArchitectures, {header: true}).data
 

@@ -6,7 +6,7 @@
 	import ZoomButton from '$lib/ZoomButton.svelte'
 	import SelectButton from '$lib/SelectButton.svelte'
 
-	let { onzoomtoindice, onselectindice } = $props()
+	let { onzoomtoindice, onselectindice, onLoaded } = $props()
 	let treeGrid = $state()
 
 	const fGroupDomains = groupBy(tsneData, 'f_id')
@@ -49,6 +49,8 @@
 		treeGrid.getState().flatData.map(i => i.id).filter(i => i.startsWith('a.')).forEach(i => treeGrid.exec(value ? 'open-row' : 'close-row', {id: i, nested: true}))
 		treeGrid.exec('filter-rows', { filter: ({ label }) => label.includes(value) })
 	}
+
+	onLoaded()
 
 </script>
 
