@@ -9,8 +9,8 @@
 	let { selectedIndice, onSelectIndice, onLoaded } = $props()
 
 	let canvasWrapper
-	let canvasPoints = $state()
-	let canvasLabels = $state()
+	let canvasPoints
+	let canvasLabels
 
 	$effect(() => {
 		if(selectedIndice && window.scatterplot) {
@@ -62,12 +62,14 @@
 
 			scatterplot.subscribe('select', ({ points }) => onSelectIndice(points))
 
-			const overlayFontSize = 12
-			const contextLabels = canvasLabels.getContext('2d')
-			contextLabels.font = `${overlayFontSize * window.devicePixelRatio}px sans-serif`
-			contextLabels.textAlign = 'center'
+			const overlayFontSize = 20
 
 			scatterplot.subscribe('drawing', ({ xScale, yScale }) => {
+
+				const contextLabels = canvasLabels.getContext('2d')
+				contextLabels.font = `${overlayFontSize * window.devicePixelRatio}px sans-serif`
+				contextLabels.textAlign = 'center'
+
 				contextLabels.clearRect(0, 0, canvasLabels.width, canvasLabels.height)
 
 				const pointsInView = scatterplot.get('pointsInView')
