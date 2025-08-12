@@ -8,7 +8,6 @@
 
 	const RADIX = 36
 
-	let expandedTsne = $state(false)
 	let selectedIndice = $state([])
 	let treeLoaded = $state(false)
 	let plotLoaded = $state(false)
@@ -33,11 +32,6 @@
 
 	const appendSelectedIndice = indice => setSelectedIndice(uniq([...selectedIndice, ...indice]))
 
-	const toggleExpandedTsne = () => {
-		expandedTsne = !expandedTsne
-		tick().then(() => tsnePlot.redrawCanvas())
-	}
-
 </script>
 
 <WillowDark>
@@ -55,20 +49,9 @@
 			<div class="flex-1 overflow-hidden">
 				<EcodTree onzoomtoindice={zoomToDomains} onselectindice={appendSelectedIndice} onLoaded={() => treeLoaded = true}/>
 			</div>
-			<div class={(expandedTsne ? 'fixed inset-0 z-10' : 'border-l-2 border-gray-500') + ' flex-1 overflow-hidden flex flex-col bg-neutral-800'}>
-				<div class="flex flex-row border-b-1 border-gray-700 p-1">
-					<div class="flex-1 flex items-center">Click to select a domain or Shift + drag to select multiple domains. Mouse wheel to zoom in and out.</div>
-					<div>
-						<Button icon="mdi mdi-camera" title="Save image" onclick={() => tsnePlot.exportImage()}/>
-						<Button icon={expandedTsne ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand'} title={expandedTsne ? 'Collapse' : 'Expand'} onclick={toggleExpandedTsne}/>
-					</div>
-				</div>
-				<div class="flex-1">
-					<TsnePlot bind:this={tsnePlot} selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice} onLoaded={() => plotLoaded = true}/>
-				</div>
-			</div>
+			<TsnePlot bind:this={tsnePlot} selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice} onLoaded={() => plotLoaded = true}/>
 		</div>
-		<div class="flex-1 overflow-hidden">
+		<div class="basis-1/3 overflow-hidden">
 			<SelectedDomainsTable selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice}/>
 		</div>
 	</div>
