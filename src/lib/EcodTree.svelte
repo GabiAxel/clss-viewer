@@ -46,8 +46,29 @@
 	]
 
 	const applyFilter = ({ value }) => {
-		treeGrid.getState().flatData.map(i => i.id).filter(i => i.startsWith('a.')).forEach(i => treeGrid.exec(value ? 'open-row' : 'close-row', {id: i, nested: true}))
-		treeGrid.exec('filter-rows', { filter: ({ label }) => label.includes(value) })
+		value = value.toLowerCase().trim()
+		if(value.length < 3) {
+			treeGrid.exec('filter-rows', { filter: () => true })
+		}
+		else {
+			const idsToExpand = new Set([])
+			const filtered = ecodHierarchy.filter(({ level_id, name }) => level_id.includes(value) || name.toLowerCase().includes(value))
+			const filteredByEcodId = tsneData.find(x => x.ecod_id.toLowerCase() === value)
+			if(filteredByEcodId) {
+				idsToExpand.add(`a.${filteredByEcodId.a_id}`)
+				filtered.push({level_id: `${filteredByEcodId.f_id}.`, a_id: filteredByEcodId.a_id})
+			}
+			filtered.forEach(i => {
+				idsToExpand.add(`a.${i.a_id}`)
+				let parentId = i.level_id.substring(0, i.level_id.lastIndexOf('.'))
+				while(parentId) {
+					idsToExpand.add(parentId)
+					parentId = parentId.substring(0, parentId.lastIndexOf('.'))
+				}
+			})
+			idsToExpand.forEach(id => treeGrid.exec('open-row', { id, nested: false }))
+			treeGrid.exec('filter-rows', { filter: ({ label, is_domain }) => is_domain ? label.toLowerCase() === value : label.toLowerCase().includes(value.toLowerCase()) })
+		}
 	}
 
 	onLoaded()
