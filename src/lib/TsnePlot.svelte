@@ -7,7 +7,7 @@
 	import download from 'downloadjs';
 	import { Button } from 'wx-svelte-core'
 
-	let { selectedIndice, onSelectIndice, onLoaded } = $props()
+	let { darkMode, selectedIndice, onSelectIndice, onLoaded } = $props()
 	let expandedTsne = $state(false)
 	let hoverDomain = $state('')
 
@@ -42,7 +42,8 @@
 				xScale: scaleLinear().domain([-1, 1]),
 				yScale: scaleLinear().domain([-1, 1]),
 				pointSize: 2,
-				backgroundColor: '#111827',
+				// backgroundColor: darkMode ? '#111827' : '#ffffff',
+				backgroundColor: '#ffffff',
 				pointColor: map(architectures, 'color'),
 				colorBy: 'valueA',
 				opacity: [0.5, 1],

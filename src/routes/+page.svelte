@@ -1,10 +1,10 @@
 <script>
 	import EcodTree from '$lib/EcodTree.svelte'
 	import TsnePlot from '$lib/TsnePlot.svelte'
-	import { Button, WillowDark } from 'wx-svelte-core'
+	import { Willow, WillowDark } from 'wx-svelte-core'
 	import SelectedDomainsTable from '$lib/SelectedDomainsTable.svelte'
 	import _, { uniq } from 'lodash-es'
-	import { onMount, tick } from 'svelte'
+	import { onMount } from 'svelte'
 
 	const RADIX = 36
 
@@ -12,6 +12,10 @@
 	let treeLoaded = $state(false)
 	let plotLoaded = $state(false)
 	let tsnePlot
+
+	let darkMode = false
+
+	let WrapperComponent = darkMode ? WillowDark : Willow
 
 	onMount(() => {
 		try {
@@ -34,7 +38,7 @@
 
 </script>
 
-<WillowDark>
+<WrapperComponent>
 	{#if !(treeLoaded && plotLoaded)}
 		<div class="absolute z-10 top-10 bottom-0 left-0 right-0 bg-neutral-800 flex items-center justify-center text-2xl">
 			<p class="animate-pulse">Loading...</p>
@@ -49,10 +53,10 @@
 			<div class="flex-1 overflow-hidden">
 				<EcodTree onzoomtoindice={zoomToDomains} onselectindice={appendSelectedIndice} onLoaded={() => treeLoaded = true}/>
 			</div>
-			<TsnePlot bind:this={tsnePlot} selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice} onLoaded={() => plotLoaded = true}/>
+			<TsnePlot bind:this={tsnePlot} darkMode={darkMode} selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice} onLoaded={() => plotLoaded = true}/>
 		</div>
 		<div class="basis-1/3 overflow-hidden">
 			<SelectedDomainsTable selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice}/>
 		</div>
 	</div>
-</WillowDark>
+</WrapperComponent>

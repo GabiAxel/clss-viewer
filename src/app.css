@@ -11,5 +11,6 @@
 }
 
 .wx-header-wrapper {
-    background-color: #2a2b2d;
+    background-color: oklch(55.4% 0.046 257.417);
+    color: oklch(97% 0 0);
 }
