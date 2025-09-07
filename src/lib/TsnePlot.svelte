@@ -3,10 +3,13 @@
 	import { scaleLinear } from 'd3-scale'
 
 	import { architectures, tsneData } from '$lib/data.js'
-	import { onMount } from 'svelte'
+	import { onMount, tick } from 'svelte'
 	import download from 'downloadjs';
+	import { Button } from 'wx-svelte-core'
 
 	let { selectedIndice, onSelectIndice, onLoaded } = $props()
+	let expandedTsne = $state(false)
+	let hoverDomain = $state('')
 
 	let canvasWrapper
 	let canvasPoints
@@ -84,6 +87,13 @@
 				}
 			})
 
+			scatterplot.subscribe('pointOver', i => {
+				const d = tsneData[i]
+				hoverDomain = `<strong>${d.ecod_id}</strong> / ${d.f_id}<br/>${d.a_name}<br/>${d.x_name}<br/>${d.h_name}<br/>${d.t_name}<br/>${d.f_name || 'No F-group'}`
+			})
+
+			scatterplot.subscribe('pointOut', () => hoverDomain = '')
+
 		})
 
 		window.addEventListener('resize', () => redrawCanvas())
@@ -98,16 +108,32 @@
 	export const zoomToDomains = indice =>
 		window.scatterplot.zoomToPoints(indice, { transition: true })
 
-	export const exportImage = () => {
+	const exportImage = () => {
 		canvasPoints.toBlob(blob => download(blob, 'CLSS_tSNE.png', 'image/png'), 'image/png')
+	}
+
+	const toggleExpandedTsne = () => {
+		expandedTsne = !expandedTsne
+		tick().then(() => redrawCanvas())
 	}
 
 </script>
 
-<div bind:this={canvasWrapper} class="w-full h-full relative">
-	<canvas bind:this={canvasPoints} class="absolute top-0 bottom-0 left-0 right-0"></canvas>
-	<canvas bind:this={canvasLabels} class="absolute top-0 bottom-0 left-0 right-0 pointer-events-none"></canvas>
+<div class={(expandedTsne ? 'fixed inset-0 z-10' : 'border-l-2 border-gray-500') + ' flex-1 overflow-hidden flex flex-col bg-neutral-800'}>
+	<div class="flex flex-row">
+		<div class="flex-1 flex items-center pl-2">Click to select a domain or Shift + drag to select multiple domains. Mouse wheel to zoom in and out.</div>
+		<div>
+			<Button icon="mdi mdi-camera" title="Save image" onclick={() => exportImage()}/>
+			<Button icon={expandedTsne ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand'} title={expandedTsne ? 'Collapse' : 'Expand'} onclick={toggleExpandedTsne}/>
+		</div>
+	</div>
+	<div bind:this={canvasWrapper} class="flex-1 relative border-y-1 border-gray-700 p-1">
+		<canvas bind:this={canvasPoints} class="absolute top-0 bottom-0 left-0 right-0"></canvas>
+		<canvas bind:this={canvasLabels} class="absolute top-0 bottom-0 left-0 right-0 pointer-events-none"></canvas>
+	</div>
+	<div class="h-32 px-2 py-1">{@html hoverDomain}</div>
 </div>
+
 
 <style>
 	canvas {
