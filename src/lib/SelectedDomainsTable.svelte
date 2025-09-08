@@ -35,7 +35,7 @@ function downloadCSV() {
 	</div>
 {:else}
 	<div class="w-full h-full flex-row overflow-hidden">
-		<div class="flex border-b-1 border-gray-700 bg-slate-500 text-neutral-100">
+		<div class="flex border-b-1 border-gray-700 not-dark:bg-gray-100 dark:bg-gray-900">
 			<strong class="p-2 flex-1">
 				{#if domains.length == 1}
 					1 domain
@@ -43,8 +43,8 @@ function downloadCSV() {
 					{domains.length} domains
 				{/if}
 			</strong>
-			<Button type="primary" icon="mdi mdi-download" onclick={downloadCSV}>Download</Button>
-			<Button type="primary" icon="mdi mdi-close" onclick={() => onSelectIndice([])}>Clear</Button>
+			<Button icon="mdi mdi-download" onclick={downloadCSV}>Download</Button>
+			<Button icon="mdi mdi-close" onclick={() => onSelectIndice([])}>Clear</Button>
 		</div>
 		<Grid columns={columns} data={domains}/>
 	</div>

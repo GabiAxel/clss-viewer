@@ -6,11 +6,17 @@
 
 @source '../node_modules/@skeletonlabs/skeleton-svelte/dist';
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 .wx-cell {
     cursor: default;
 }
 
 .wx-header-wrapper {
-    background-color: oklch(55.4% 0.046 257.417);
-    color: oklch(97% 0 0);
+    background-color: oklch(0.967 0.003 264.542);
+    border-bottom: 1px solid oklch(0.373 0.034 259.733);
+}
+
+.dark .wx-header-wrapper {
+    background-color: oklch(0.21 0.034 264.665);
 }

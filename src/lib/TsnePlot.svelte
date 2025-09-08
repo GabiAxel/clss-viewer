@@ -42,8 +42,6 @@
 				xScale: scaleLinear().domain([-1, 1]),
 				yScale: scaleLinear().domain([-1, 1]),
 				pointSize: 2,
-				// backgroundColor: darkMode ? '#111827' : '#ffffff',
-				backgroundColor: '#ffffff',
 				pointColor: map(architectures, 'color'),
 				colorBy: 'valueA',
 				opacity: [0.5, 1],
@@ -120,9 +118,9 @@
 
 </script>
 
-<div class={(expandedTsne ? 'fixed inset-0 z-10' : 'border-l-2 border-gray-500') + ' flex-1 overflow-hidden flex flex-col bg-neutral-800'}>
+<div class={`${expandedTsne ? 'fixed inset-0 z-10' : 'border-l-2 border-gray-500'} flex-1 overflow-hidden flex flex-col ${darkMode ? 'bg-neutral-800' : 'bg-white'}`}>
 	<div class="flex flex-row">
-		<div class="flex-1 flex items-center pl-2">Click to select a domain or Shift + drag to select multiple domains. Mouse wheel to zoom in and out.</div>
+		<div class="flex-1 flex items-center pl-2 not-dark:bg-gray-50 dark:bg-gray-900">Click to select a domain or Shift + drag to select multiple domains. Mouse wheel to zoom in and out.</div>
 		<div>
 			<Button icon="mdi mdi-camera" title="Save image" onclick={() => exportImage()}/>
 			<Button icon={expandedTsne ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand'} title={expandedTsne ? 'Collapse' : 'Expand'} onclick={toggleExpandedTsne}/>
@@ -132,7 +130,7 @@
 		<canvas bind:this={canvasPoints} class="absolute top-0 bottom-0 left-0 right-0"></canvas>
 		<canvas bind:this={canvasLabels} class="absolute top-0 bottom-0 left-0 right-0 pointer-events-none"></canvas>
 	</div>
-	<div class="h-32 px-2 py-1">{@html hoverDomain}</div>
+	<div class="h-32 px-2 py-1 not-dark:bg-gray-50 dark:bg-gray-900">{@html hoverDomain}</div>
 </div>
 
 
