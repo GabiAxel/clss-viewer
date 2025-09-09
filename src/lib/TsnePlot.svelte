@@ -13,7 +13,6 @@
 
 	let canvasWrapper
 	let canvasPoints
-	let canvasLabels
 
 	$effect(() => {
 		if(selectedIndice && window.scatterplot) {
@@ -21,17 +20,7 @@
 		}
 	})
 
-	const resizeLabelsCanvas = () => {
-		const { width, height } = canvasWrapper.getBoundingClientRect()
-		canvasLabels.width = width * window.devicePixelRatio
-		canvasLabels.height = height * window.devicePixelRatio
-		canvasLabels.style.width = `${width}px`
-		canvasLabels.style.height = `${height}px`
-	}
-
 	onMount(() => {
-
-		resizeLabelsCanvas()
 
 		const { width, height } = canvasPoints.getBoundingClientRect()
 		import('regl-scatterplot').then(({ default: createScatterplot }) => {
@@ -41,10 +30,10 @@
 				height: height,
 				xScale: scaleLinear().domain([-1, 1]),
 				yScale: scaleLinear().domain([-1, 1]),
-				pointSize: 2,
+				pointSize: 1,
 				pointColor: map(architectures, 'color'),
 				colorBy: 'valueA',
-				opacity: [0.5, 1],
+				opacity: [0.4, 1],
 				opacityBy: 'valueB'
 			})
 
@@ -64,28 +53,6 @@
 
 			scatterplot.subscribe('select', ({ points }) => onSelectIndice(points))
 
-			const overlayFontSize = 20
-
-			scatterplot.subscribe('drawing', ({ xScale, yScale }) => {
-
-				const contextLabels = canvasLabels.getContext('2d')
-				contextLabels.font = `${overlayFontSize * window.devicePixelRatio}px sans-serif`
-				contextLabels.textAlign = 'center'
-
-				contextLabels.clearRect(0, 0, canvasLabels.width, canvasLabels.height)
-
-				const pointsInView = scatterplot.get('pointsInView')
-				if(pointsInView.length <= 100) {
-					contextLabels.fillStyle = 'rgb(255, 255, 255)'
-					const dpr = window.devicePixelRatio
-					for(let i = 0; i < pointsInView.length; i++) {
-						const [x, y] = points[pointsInView[i]]
-						const { ecod_id } = tsneData[pointsInView[i]]
-						contextLabels.fillText(ecod_id, xScale(x) * dpr, yScale(y) * dpr - overlayFontSize * 1.2 * dpr)
-					}
-				}
-			})
-
 			scatterplot.subscribe('pointOver', i => {
 				const d = tsneData[i]
 				hoverDomain = `<strong>${d.ecod_id}</strong> / ${d.f_id}<br/>${d.a_name}<br/>${d.x_name}<br/>${d.h_name}<br/>${d.t_name}<br/>${d.f_name || 'No F-group'}`
@@ -101,7 +68,6 @@
 	export const redrawCanvas = () => {
 		const { width, height } = canvasWrapper.getBoundingClientRect()
 		window.scatterplot.set({ width, height })
-		resizeLabelsCanvas()
 	}
 
 	export const zoomToDomains = indice =>
@@ -118,19 +84,18 @@
 
 </script>
 
-<div class={`${expandedTsne ? 'fixed inset-0 z-10' : 'border-l-2 border-gray-500'} flex-1 overflow-hidden flex flex-col ${darkMode ? 'bg-neutral-800' : 'bg-white'}`}>
+<div class={`${expandedTsne ? 'fixed inset-0 z-10' : 'border-l-2 border-gray-500'} flex-1 overflow-hidden flex flex-col not-dark:bg-white`}>
 	<div class="flex flex-row">
-		<div class="flex-1 flex items-center pl-2 not-dark:bg-gray-50 dark:bg-gray-900">Click to select a domain or Shift + drag to select multiple domains. Mouse wheel to zoom in and out.</div>
+		<div class="flex-1 flex items-center pl-2 not-dark:bg-gray-50">Click to select a domain or Shift + drag to select multiple domains. Mouse wheel to zoom in and out.</div>
 		<div>
 			<Button icon="mdi mdi-camera" title="Save image" onclick={() => exportImage()}/>
 			<Button icon={expandedTsne ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand'} title={expandedTsne ? 'Collapse' : 'Expand'} onclick={toggleExpandedTsne}/>
 		</div>
 	</div>
-	<div bind:this={canvasWrapper} class="flex-1 relative border-y-1 border-gray-700 p-1">
+	<div bind:this={canvasWrapper} class="flex-1 relative border-y-1 border-gray-700 p-1 not-dark:bg-white dark:bg-black">
 		<canvas bind:this={canvasPoints} class="absolute top-0 bottom-0 left-0 right-0"></canvas>
-		<canvas bind:this={canvasLabels} class="absolute top-0 bottom-0 left-0 right-0 pointer-events-none"></canvas>
 	</div>
-	<div class="h-32 px-2 py-1 not-dark:bg-gray-50 dark:bg-gray-900">{@html hoverDomain}</div>
+	<div class="h-32 px-2 py-1 not-dark:bg-gray-50">{@html hoverDomain}</div>
 </div>
 
 
