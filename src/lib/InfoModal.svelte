@@ -11,6 +11,7 @@
 		Supplementary website for:<br/>
 		Yanai, G., Axel, G., Longo, L.M., Ben-Tal, N., Kolodny, R., 2025.
 		<strong>Contrastive learning unites sequence and structure in a global representation of protein space</strong>
+		<i>bioRxiv</i> <a href="https://doi.org/10.1101/2025.09.05.674454" target="_blank">https://doi.org/10.1101/2025.09.05.674454</a>
 		<br/><br/>
 		Use the left pane to browse and search for ECOD domains.
 		Click <i class="mdi mdi-magnify-plus"></i> to zoom into domains in the t-SNE plot.
