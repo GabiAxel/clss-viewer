@@ -4,6 +4,7 @@
 	let { row, onaction } = $props()
 
 	function onClick() {
+		console.log(row)
 		onaction({
 			action: 'selectindice',
 			data: getPointIndiceInEcodHierarchy(row.id)

@@ -105,7 +105,7 @@
 		</div>
 	</div>
 	<div bind:this={canvasWrapper} class="flex-1 relative border-y-1 border-gray-700 p-1 not-dark:bg-white dark:bg-black">
-		<canvas bind:this={canvasPoints} on:contextmenu={onCanvasContextMenu} class="absolute top-0 bottom-0 left-0 right-0"></canvas>
+		<canvas bind:this={canvasPoints} oncontextmenu={onCanvasContextMenu} class="absolute top-0 bottom-0 left-0 right-0"></canvas>
 	</div>
 	<div class="h-32 px-2 py-1 not-dark:bg-gray-50">{@html hoverDomainHTML}</div>
 </div>

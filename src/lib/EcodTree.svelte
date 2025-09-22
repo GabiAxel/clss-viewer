@@ -6,7 +6,7 @@
 	import ZoomButton from '$lib/ZoomButton.svelte'
 	import SelectButton from '$lib/SelectButton.svelte'
 
-	let { onZoomToIndice, onselectindice, onLoaded } = $props()
+	let { onZoomToIndice, onSelectIndice, onLoaded } = $props()
 	let treeGrid = $state()
 
 	const fGroupDomains = groupBy(tsneData, 'f_id')
@@ -87,7 +87,7 @@
 			columns={treeColumns}
 			select={false}
 			onzoomtoindice={onZoomToIndice}
-			onselectindice={onselectindice}/>
+			onselectindice={onSelectIndice}/>
 	</div>
 </div>
 
