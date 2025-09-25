@@ -1,5 +1,4 @@
 <script>
-	import { Button } from 'wx-svelte-core'
 	import { getPointIndiceInEcodHierarchy } from '$lib/data.js';
 	let { row, onaction } = $props()
 
@@ -11,4 +10,4 @@
 	}
 </script>
 
-<button onclick={onClick} title="Zoom to domain(s)" aria-label="Zoom to domain(s)"><i class="mdi mdi-magnify-plus"></i></button>
+<button onclick={onClick} title="Zoom in plot" aria-label="Zoom in plot"><i class="mdi mdi-magnify-plus"></i></button>

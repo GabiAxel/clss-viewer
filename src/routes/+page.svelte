@@ -48,6 +48,8 @@
 
 	const appendSelectedIndice = indice => setSelectedIndice(uniq([...selectedIndice, ...indice]))
 
+	const openEcodPage = ecodId => window.open(`http://prodata.swmed.edu/ecod/af2_pdb/domain/${ecodId}`, '_blank')
+
 </script>
 
 <ThemeComponent/>
@@ -66,12 +68,12 @@
 		</div>
 		<div class="flex-1 flex flex-row overflow-hidden border-b-2 border-gray-500">
 			<div class="flex-1 overflow-hidden">
-				<EcodTree onzoomtoindice={zoomToDomains} onselectindice={appendSelectedIndice} onLoaded={() => treeLoaded = true}/>
+				<EcodTree onZoomToIndice={zoomToDomains} onSelectIndice={appendSelectedIndice} onLoaded={() => treeLoaded = true}/>
 			</div>
-			<TsnePlot bind:this={tsnePlot} darkMode={darkMode} selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice} onLoaded={() => plotLoaded = true}/>
+			<TsnePlot bind:this={tsnePlot} selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice} openEcodPage={openEcodPage} onLoaded={() => plotLoaded = true}/>
 		</div>
 		<div class="basis-1/3 overflow-hidden">
-			<SelectedDomainsTable selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice}/>
+			<SelectedDomainsTable selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice} onZoomToIndice={zoomToDomains} openEcodPage={openEcodPage}/>
 		</div>
 	</div>
 </div>

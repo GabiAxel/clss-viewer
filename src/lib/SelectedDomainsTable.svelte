@@ -4,6 +4,8 @@ import { Grid } from 'wx-svelte-grid'
 import { Button } from 'wx-svelte-core'
 import download from 'downloadjs'
 import { tsneData } from '$lib/data.js';
+import ZoomButton from '$lib/ZoomButton.svelte'
+import OpenEcodPageButton from '$lib/OpenEcodPageButton.svelte'
 
 const columns = [
 	{id: 'ecod_id', header: 'Domain ID'},
@@ -13,13 +15,13 @@ const columns = [
 	{id: 'h_name', header: 'H-Group', flexgrow: 1},
 	{id: 't_name', header: 'T-Group', flexgrow: 1},
 	{id: 'f_name', header: 'F-Group', flexgrow: 1},
-	{id: 'x', header: 'X'},
-	{id: 'y', header: 'Y'}
+	{id: 'zoom', cell: ZoomButton, width: 40},
+	{id: 'ecodpage', cell: OpenEcodPageButton, width: 40},
 ]
 
-let { selectedIndice, onSelectIndice } = $props()
+let { selectedIndice, onSelectIndice, onZoomToIndice, openEcodPage } = $props()
 
-let domains = $derived(selectedIndice.map(i => tsneData[i]))
+let domains = $derived(selectedIndice.map(i => ({...tsneData[i], id: tsneData[i].ecod_id})))
 
 function downloadCSV() {
 	let csvString = map(columns, 'header') + '\n' +
@@ -46,6 +48,6 @@ function downloadCSV() {
 			<Button icon="mdi mdi-download" onclick={downloadCSV}>Download</Button>
 			<Button icon="mdi mdi-close" onclick={() => onSelectIndice([])}>Clear</Button>
 		</div>
-		<Grid columns={columns} data={domains}/>
+		<Grid columns={columns} data={domains} onzoomtoindice={onZoomToIndice} onopenecodpage={openEcodPage}/>
 	</div>
 {/if}
