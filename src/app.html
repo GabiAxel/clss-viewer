@@ -6,9 +6,62 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css" />
 		<title>CLSS Viewer</title>
+		<style>
+			@keyframes loading {
+          0% {
+              box-shadow: 10px 0 rgba(255, 255, 255, 0), 20px 0 rgba(255, 255, 255, 0);
+          }
+          50% {
+              box-shadow: 10px 0 oklch(55.6% 0 0), 20px 0 rgba(255, 255, 255, 0);
+          }
+          100% {
+              box-shadow: 10px 0 oklch(55.6% 0 0), 20px 0 oklch(55.6% 0 0);
+          }
+      }
+			#loading-wrapper {
+					position: absolute;
+					top: 0;
+					bottom: 0;
+					left: 0;
+					right: 0;
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					font-family: "Open Sans", Arial, Helvetica, sans-serif;
+					font-size: 3em;
+					font-weight: bold;
+					background-color: oklch(92.8% 0.006 264.531);
+					color: oklch(55.6% 0 0);
+			}
+			#loading {
+					display: inline-block;
+					position: relative;
+					box-sizing: border-box;
+			}
+			#loading:after {
+					content: '';
+          width: 5px;
+          height: 5px;
+          background: currentColor;
+          position: absolute;
+          bottom: 10px;
+          right: -5px;
+          box-sizing: border-box;
+          animation: loading 1s linear infinite;
+			}
+			#app-wrapper {
+          position: absolute;
+          top: 0;
+          bottom: 0;
+          left: 0;
+          right: 0;
+					z-index: 1;
+			}
+		</style>
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover">
-		<div style="display: contents">%sveltekit.body%</div>
+	<body>
+		<div id="loading-wrapper"><span id="loading">Loading</span></div>
+		<div id="app-wrapper">%sveltekit.body%</div>
 	</body>
 </html>
