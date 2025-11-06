@@ -4,18 +4,21 @@
 	import InfoModal from '$lib/InfoModal.svelte'
 	import { Willow, WillowDark } from 'wx-svelte-core'
 	import SelectedDomainsTable from '$lib/SelectedDomainsTable.svelte'
-	import _, { uniq } from 'lodash-es'
+	import _, { difference, uniq } from 'lodash-es'
 	import { onMount } from 'svelte'
+	import BulkSelectModal from '$lib/BulkSelectModal.svelte'
 
 	const RADIX = 36
 
-	let selectedIndice = $state([])
+	let selectedIndices = $state([])
 	let treeLoaded = $state(false)
 	let plotLoaded = $state(false)
 	let showInfoModal = $state(false)
+	let showBulkModal = $state(false)
 
 	let darkMode = $state(typeof window !== 'undefined' && (window.localStorage.theme === 'dark' || (!('theme' in window.localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)))
 
+	// let visibleIndices = []
 	let tsnePlot
 
 	$effect(() => applyTheme(darkMode))
@@ -31,22 +34,38 @@
 	onMount(() => {
 		applyTheme(darkMode)
 		try {
-			selectedIndice = window.location.hash.substring(2).split(',').map(i => parseInt(i, RADIX)).filter(i => !isNaN(i))
+			selectedIndices = window.location.hash.substring(2).split(',').map(i => parseInt(i, RADIX)).filter(i => !isNaN(i))
 		} catch(e) {
 			console.error(e)
 			window.history.replaceState(undefined, '', '#/')
 		}
 	})
 
-	const zoomToDomains = indice =>
-		tsnePlot.zoomToDomains(indice)
-
-	const setSelectedIndice = indice => {
-		selectedIndice = indice
-		window.history.replaceState(undefined, '', '#/' + _(selectedIndice).map(i => i.toString(RADIX)).sortBy().join(','))
+	const appendToVisibleIndices = indices => {
+		// console.log('A')
+		// // visibleIndices = visibleIndices.union(new Set(indices))
+		// visibleIndices = visibleIndices + indices
+		// console.log('B', visibleIndices.length)
+		// // tsnePlot.filter(Array.from(visibleIndices))
+		tsnePlot.appendToVisibleIndices(indices)
+		// console.log('C')
 	}
 
-	const appendSelectedIndice = indice => setSelectedIndice(uniq([...selectedIndice, ...indice]))
+	const setOnlyVisibleIndices = indices => {
+		// visibleIndices = new Set(indices)
+		tsnePlot.setOnlyVisibleIndices(indices)
+	}
+
+	const zoomToDomains = indices => tsnePlot.zoomToDomains(indices)
+
+	const setSelectedIndices = indices => {
+		selectedIndices = indices
+		window.history.replaceState(undefined, '', '#/' + _(selectedIndices).map(i => i.toString(RADIX)).sortBy().join(','))
+	}
+
+	const appendSelectedIndices = indices => setSelectedIndices(uniq([...selectedIndices, ...indices]))
+
+	const removeIndicesFromSelection = indicesToRemove => setSelectedIndices(difference(selectedIndices, indicesToRemove))
 
 	const openEcodPage = ecodId => window.open(`http://prodata.swmed.edu/ecod/af2_pdb/domain/${ecodId}`, '_blank')
 
@@ -60,6 +79,7 @@
 		</div>
 	{/if}
 	<InfoModal show={showInfoModal} onClose={() => showInfoModal = false}/>
+	<BulkSelectModal show={showBulkModal} onClose={() => showBulkModal = false} selectIndices={appendSelectedIndices}/>
 	<div class="h-screen flex flex-col">
 		<div class="flex flex-row items-center bg-gray-600 text-neutral-200 px-4 py-1 text-lg">
 			<h1 class="flex-1">Contrastive Learning Sequence-Structure (CLSS) - ECOD Domain Space Viewer</h1>
@@ -68,12 +88,26 @@
 		</div>
 		<div class="flex-1 flex flex-row overflow-hidden border-b-2 border-gray-500">
 			<div class="flex-1 overflow-hidden">
-				<EcodTree onZoomToIndice={zoomToDomains} onSelectIndice={appendSelectedIndice} onLoaded={() => treeLoaded = true}/>
+				<EcodTree
+					onZoomToIndices={zoomToDomains}
+					onSelectIndices={appendSelectedIndices}
+					onDeselectIndices={removeIndicesFromSelection}
+					onAppendVisibleIndices={appendToVisibleIndices}
+					onSetOnlyVisibleIndices={setOnlyVisibleIndices}
+					onLoaded={() => treeLoaded = true}
+				/>
 			</div>
-			<TsnePlot bind:this={tsnePlot} selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice} openEcodPage={openEcodPage} onLoaded={() => plotLoaded = true}/>
+			<TsnePlot
+				bind:this={tsnePlot}
+				selectedIndices={selectedIndices}
+				onSelectIndices={setSelectedIndices}
+				openEcodPage={openEcodPage}
+				onLoaded={() => plotLoaded = true}
+				openBulkModal={() => showBulkModal = true}
+			/>
 		</div>
 		<div class="basis-1/3 overflow-hidden">
-			<SelectedDomainsTable selectedIndice={selectedIndice} onSelectIndice={setSelectedIndice} onZoomToIndice={zoomToDomains} openEcodPage={openEcodPage}/>
+			<SelectedDomainsTable selectedIndices={selectedIndices} onSelectIndices={setSelectedIndices} onZoomToIndices={zoomToDomains} openEcodPage={openEcodPage}/>
 		</div>
 	</div>
 </div>

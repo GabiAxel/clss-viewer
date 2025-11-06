@@ -19,9 +19,9 @@ const columns = [
 	{id: 'ecodpage', cell: OpenEcodPageButton, width: 40},
 ]
 
-let { selectedIndice, onSelectIndice, onZoomToIndice, openEcodPage } = $props()
+let { selectedIndices, onSelectIndices, onZoomToIndices, openEcodPage } = $props()
 
-let domains = $derived(selectedIndice.map(i => ({...tsneData[i], id: tsneData[i].ecod_id})))
+let domains = $derived(selectedIndices.map(i => ({...tsneData[i], id: tsneData[i].ecod_id})))
 
 function downloadCSV() {
 	let csvString = map(columns, 'header') + '\n' +
@@ -46,8 +46,8 @@ function downloadCSV() {
 				{/if}
 			</strong>
 			<Button icon="mdi mdi-download" onclick={downloadCSV}>Download</Button>
-			<Button icon="mdi mdi-close" onclick={() => onSelectIndice([])}>Clear</Button>
+			<Button icon="mdi mdi-close" onclick={() => onSelectIndices([])}>Clear</Button>
 		</div>
-		<Grid columns={columns} data={domains} onzoomtoindice={onZoomToIndice} onopenecodpage={openEcodPage}/>
+		<Grid columns={columns} data={domains} onzoomtoindices={onZoomToIndices} onopenecodpage={openEcodPage}/>
 	</div>
 {/if}

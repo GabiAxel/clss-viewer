@@ -32,9 +32,9 @@ export const tsneData = Papa.parse(rawTsneData, {header: true, dynamicTyping: tr
 		return {ecod_id, a_id, f_id, a_name, x_name, h_name, t_name, f_name, x, y}
 	})
 
-const ecodIndex = _(tsneData).map(({ecod_id}, index) => [ecod_id, index]).fromPairs().value()
+export const ecodIndex = _(tsneData).map(({ecod_id}, index) => [ecod_id, index]).fromPairs().value()
 
-export const getPointIndiceInEcodHierarchy = id => {
+export const getPointIndicesInEcodHierarchy = id => {
 	id = id.toString()
 	let domainIds
 	if(id.startsWith('a.')) {

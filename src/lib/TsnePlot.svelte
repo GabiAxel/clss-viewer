@@ -1,5 +1,5 @@
 <script>
-	import { map } from 'lodash-es'
+	import { map, uniq } from 'lodash-es'
 	import { scaleLinear } from 'd3-scale'
 
 	import { architectures, tsneData } from '$lib/data.js'
@@ -7,7 +7,7 @@
 	import download from 'downloadjs';
 	import { Button } from 'wx-svelte-core'
 
-	let { selectedIndice, onSelectIndice, onLoaded, openEcodPage } = $props()
+	let { selectedIndices, onSelectIndices, onLoaded, openBulkModal, openEcodPage } = $props()
 	let expandedTsne = $state(false)
 	let hoverDomainHTML = $state('')
 
@@ -16,8 +16,8 @@
 	let hoverDomainId = null
 
 	$effect(() => {
-		if(selectedIndice && window.scatterplot) {
-			window.scatterplot.select(selectedIndice, { preventEvent: true })
+		if(selectedIndices && window.scatterplot) {
+			window.scatterplot.select(selectedIndices, { preventEvent: true })
 		}
 	})
 
@@ -46,13 +46,13 @@
 
 			scatterplot.draw(points).then(() => {
 				onLoaded()
-				if(selectedIndice.length > 0) {
-						zoomToDomains(selectedIndice)
-						scatterplot.select(selectedIndice, { preventEvent: true })
+				if(selectedIndices.length > 0) {
+						zoomToDomains(selectedIndices)
+						scatterplot.select(selectedIndices, { preventEvent: true })
 				}
 			})
 
-			scatterplot.subscribe('select', ({ points }) => onSelectIndice(points))
+			scatterplot.subscribe('select', ({ points }) => onSelectIndices(points))
 
 			scatterplot.subscribe('pointOver', i => {
 				const d = tsneData[i]
@@ -75,8 +75,8 @@
 		window.scatterplot.set({ width, height })
 	}
 
-	export const zoomToDomains = indice =>
-		window.scatterplot.zoomToPoints(indice, { transition: true })
+	export const zoomToDomains = indices =>
+		window.scatterplot.zoomToPoints(indices, { transition: true })
 
 	const exportImage = () => {
 		canvasPoints.toBlob(blob => download(blob, 'CLSS_tSNE.png', 'image/png'), 'image/png')
@@ -94,13 +94,24 @@
 		}
 	}
 
+	// export const appendToVisibleIndices = indices => window.scatterplot.filter([...window.scatterplot.get('filteredPoints'), ...indices], { preventEvent: true })
+
+	export const appendToVisibleIndices = indices => {
+		indices = uniq([...window.scatterplot.get('filteredPoints'), ...indices])
+		console.log(indices.length)
+		window.scatterplot.filter(indices, { preventEvent: true })
+	}
+
+	export const setOnlyVisibleIndices = indices => window.scatterplot.filter(indices, { preventEvent: true })
+
 </script>
 
 <div class={`${expandedTsne ? 'fixed inset-0 z-10' : 'border-l-2 border-gray-500'} flex-1 overflow-hidden flex flex-col not-dark:bg-white`}>
 	<div class="flex flex-row">
 		<div class="flex-1 flex items-center pl-2 not-dark:bg-gray-50">Click to select a domain or Shift + drag to select multiple domains. Mouse wheel to zoom in and out. Right-click to open ECOD domain page.</div>
 		<div>
-			<Button icon="mdi mdi-camera" title="Save image" onclick={() => exportImage()}/>
+			<Button icon="mdi mdi-file-upload" title="Bulk select by PDB/UniProt" onclick={openBulkModal}/>
+			<Button icon="mdi mdi-camera" title="Save image" onclick={exportImage}/>
 			<Button icon={expandedTsne ? 'mdi mdi-arrow-collapse' : 'mdi mdi-arrow-expand'} title={expandedTsne ? 'Collapse' : 'Expand'} onclick={toggleExpandedTsne}/>
 		</div>
 	</div>

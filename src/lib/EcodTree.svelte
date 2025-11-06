@@ -3,10 +3,9 @@
 	import { architectures, ecodHierarchy, tsneData } from '$lib/data.js'
 	import { Grid } from 'wx-svelte-grid'
 	import { Text } from 'wx-svelte-core'
-	import ZoomButton from '$lib/ZoomButton.svelte'
-	import SelectButton from '$lib/SelectButton.svelte'
+	import EcodTreeControls from '$lib/EcodTreeControls.svelte'
 
-	let { onZoomToIndice, onSelectIndice, onLoaded } = $props()
+	let { onZoomToIndices, onSelectIndices, onDeselectIndices, onAppendVisibleIndices, onSetOnlyVisibleIndices, onLoaded } = $props()
 	let treeGrid = $state()
 
 	const fGroupDomains = groupBy(tsneData, 'f_id')
@@ -40,8 +39,7 @@
 	}))
 
 	const treeColumns = [
-		{id: 'select', cell: SelectButton, width: 40},
-		{id: 'zoom', cell: ZoomButton, width: 40},
+		{id: 'controls', cell: EcodTreeControls, width: 100},
 		{id: 'label', flexgrow: 1, treetoggle: true}
 	]
 
@@ -86,8 +84,12 @@
 			data={hierarchyTree}
 			columns={treeColumns}
 			select={false}
-			onzoomtoindice={onZoomToIndice}
-			onselectindice={onSelectIndice}/>
+			onzoomtoindices={onZoomToIndices}
+			onselectindices={onSelectIndices}
+			ondeselectindices={onDeselectIndices}
+			onappendvisibleindices={onAppendVisibleIndices}
+			onsetonlyvisibleindices={onSetOnlyVisibleIndices}
+		/>
 	</div>
 </div>
 
