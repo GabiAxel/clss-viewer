@@ -2,18 +2,38 @@
 	import { Button, TextArea } from 'wx-svelte-core'
 	import { ecodIndex } from '$lib/data.js'
 	import _ from 'lodash-es'
+	import { tick } from 'svelte'
 
-	const { show, selectIndices, onClose } = $props()
+	const TEXTAREA_ID = 'bulk-select-textarea'
+
+	let { show, selectIndices, onClose } = $props()
 
 	let value = ''
+	let ids = $state([])
+
+	$effect(() => {
+		if(show) {
+			tick().then(() => {
+				const textarea = window.document.getElementById(TEXTAREA_ID)
+				textarea.value = ''
+				textarea.focus()
+				ids = []
+			})
+		}
+	})
+
+	function onTextChange() {
+		ids = value.split(/[^a-zA-Z0-9]+/).filter(i => !!i)
+
+	}
 
 	function findDomainsAndSelect() {
 		const indices = new Set()
-		console.log(value)
-		console.log(value.toUpperCase().split(/[^A-Z0-9]+/))
-		value.toUpperCase().split(/[^A-Z0-9]+/).forEach(item => {
+		ids.forEach(item => {
 			if(item.length === 4) {
-				_(ecodIndex).toPairs().filter(i => i[0].startsWith(`e${item}`)).map(x => {console.log(x); return x[1]}).forEach(i => indices.add(i))
+				_(ecodIndex).toPairs().filter(i => i[0].startsWith(`e${item.toLowerCase()}`)).map(x => x[1]).forEach(i => indices.add(i))
+			} else if(item.length > 4) {
+				_(ecodIndex).toPairs().filter(i => i[0].startsWith(`${item.toUpperCase()}_`)).map(x => x[1]).forEach(i => indices.add(i))
 			}
 		})
 
@@ -28,10 +48,17 @@
 	<div class="relative bg-white dark:bg-gray-900 shadow-lg p-4 max-w-xl">
 		<p>Enter a list of PDB identifiers and/or UniProt primary accessions to select and highlight their corresponding ECOD domains.</p>
 		<div class="my-4">
-			<TextArea bind:value placeholder="Example: P05067, 5BUO"/>
+			<TextArea bind:value onchange={onTextChange} id={TEXTAREA_ID} placeholder="Example: P05067, 5BUO"/>
 		</div>
-		<div class="flex justify-end">
-			<Button onClick={findDomainsAndSelect} type="primary">Select Domains</Button>
+		<div class="flex align-middle">
+			<p class="grow">
+				{#if ids.length === 1}
+					One identifier
+				{:else if ids.length > 1}
+					{ids.length} identifiers
+				{/if}
+			</p>
+			<Button onclick={findDomainsAndSelect} disabled={ids.length === 0} type="primary">Select Domains</Button>
 			<Button onclick={onClose}>Cancel</Button>
 		</div>
 	</div>

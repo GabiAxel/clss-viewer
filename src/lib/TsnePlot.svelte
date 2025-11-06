@@ -98,7 +98,6 @@
 
 	export const appendToVisibleIndices = indices => {
 		indices = uniq([...window.scatterplot.get('filteredPoints'), ...indices])
-		console.log(indices.length)
 		window.scatterplot.filter(indices, { preventEvent: true })
 	}
 
