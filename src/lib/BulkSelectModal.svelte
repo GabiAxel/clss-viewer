@@ -1,7 +1,7 @@
 <script>
 	import { Button, TextArea } from 'wx-svelte-core'
-	import { ecodIndex } from '$lib/data.js'
-	import _ from 'lodash-es'
+	import { sourceIndices } from '$lib/data.js'
+	import _, { uniq, isSafeInteger } from 'lodash-es'
 	import { tick } from 'svelte'
 
 	const TEXTAREA_ID = 'bulk-select-textarea'
@@ -23,20 +23,11 @@
 	})
 
 	function onTextChange() {
-		ids = value.split(/[^a-zA-Z0-9]+/).filter(i => !!i)
-
+		ids = uniq(value.toUpperCase().split(/[^a-zA-Z0-9]+/).filter(i => !!i))
 	}
 
 	function findDomainsAndSelect() {
-		const indices = new Set()
-		ids.forEach(item => {
-			if(item.length === 4) {
-				_(ecodIndex).toPairs().filter(i => i[0].startsWith(`e${item.toLowerCase()}`)).map(x => x[1]).forEach(i => indices.add(i))
-			} else if(item.length > 4) {
-				_(ecodIndex).toPairs().filter(i => i[0].startsWith(`${item.toUpperCase()}_`)).map(x => x[1]).forEach(i => indices.add(i))
-			}
-		})
-
+		const indices = _(ids).flatMap(sourceId => sourceIndices[sourceId]).filter(isSafeInteger).value()
 		selectIndices(indices)
 		onClose()
 	}

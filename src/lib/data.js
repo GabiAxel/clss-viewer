@@ -29,10 +29,13 @@ export const tsneData = Papa.parse(rawTsneData, {header: true, dynamicTyping: tr
 		const h_name = ecodIdNameMap[h_id]
 		const x_id = h_id.substring(0,h_id.lastIndexOf('.'))
 		const x_name = ecodIdNameMap[x_id]
-		return {ecod_id, a_id, f_id, a_name, x_name, h_name, t_name, f_name, x, y}
+		const sourceId = ecod_id.startsWith('e') ? ecod_id.substring(1, 5).toUpperCase() : ecod_id.substring(0, ecod_id.indexOf('_'))
+		return {sourceId, ecod_id, a_id, f_id, a_name, x_name, h_name, t_name, f_name, x, y}
 	})
 
-export const ecodIndex = _(tsneData).map(({ecod_id}, index) => [ecod_id, index]).fromPairs().value()
+const ecodIndex = _(tsneData).map(({ecod_id}, index) => [ecod_id, index]).fromPairs().value()
+
+export const sourceIndices = _(tsneData).map(({sourceId}, index) => [sourceId, index]).groupBy(([sourceId]) => sourceId).mapValues(pairs => pairs.map(pair => pair[1])).value()
 
 export const getPointIndicesInEcodHierarchy = id => {
 	id = id.toString()

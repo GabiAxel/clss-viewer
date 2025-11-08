@@ -4,7 +4,7 @@
 
 	function onClick() {
 		onaction({
-			action: 'zoomtoindice',
+			action: 'zoomtoindices',
 			data: getPointIndicesInEcodHierarchy(row.id)
 		})
 	}
