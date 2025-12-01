@@ -34,7 +34,7 @@
 				pointSize: 1,
 				pointColor: map(architectures, 'color'),
 				colorBy: 'valueA',
-				opacity: [0.4, 1],
+				opacity: [0.3, 1],
 				opacityBy: 'valueB'
 			})
 

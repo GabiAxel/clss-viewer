@@ -112,6 +112,7 @@
 				onSelectIndices={setSelectedIndices}
 				onZoomToIndices={zoomToDomains}
 				openEcodPage={openEcodPage}
+				onDeselectIndices={removeIndicesFromSelection}
 			/>
 		</div>
 	</div>

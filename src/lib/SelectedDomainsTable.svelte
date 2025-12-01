@@ -6,6 +6,7 @@ import download from 'downloadjs'
 import { tsneData } from '$lib/data.js';
 import ZoomButton from '$lib/ZoomButton.svelte'
 import OpenEcodPageButton from '$lib/OpenEcodPageButton.svelte'
+import DeselectButton from '$lib/DeselectButton.svelte'
 
 const columns = [
 	{id: 'ecod_id', header: 'Domain ID'},
@@ -15,11 +16,12 @@ const columns = [
 	{id: 'h_name', header: 'H-Group', flexgrow: 1},
 	{id: 't_name', header: 'T-Group', flexgrow: 1},
 	{id: 'f_name', header: 'F-Group', flexgrow: 1},
+	{id: 'deselect', cell: DeselectButton, width: 40},
 	{id: 'zoom', cell: ZoomButton, width: 40},
 	{id: 'ecodpage', cell: OpenEcodPageButton, width: 40},
 ]
 
-let { selectedIndices, onSelectIndices, onZoomToIndices, openEcodPage } = $props()
+let { selectedIndices, onSelectIndices, onZoomToIndices, openEcodPage, onDeselectIndices } = $props()
 
 let domains = $derived(selectedIndices.map(i => ({...tsneData[i], id: tsneData[i].ecod_id})))
 
@@ -49,6 +51,12 @@ function downloadCSV() {
 			<Button icon="mdi mdi-download" onclick={downloadCSV}>Download</Button>
 			<Button icon="mdi mdi-close" onclick={() => onSelectIndices([])}>Clear</Button>
 		</div>
-		<Grid columns={columns} data={domains} onzoomtoindices={onZoomToIndices} onopenecodpage={openEcodPage}/>
+		<Grid
+			columns={columns}
+			data={domains}
+			onzoomtoindices={onZoomToIndices}
+			onopenecodpage={openEcodPage}
+			ondeselectindices={onDeselectIndices}
+		/>
 	</div>
 {/if}
