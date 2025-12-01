@@ -107,7 +107,12 @@
 			/>
 		</div>
 		<div class="basis-1/3 overflow-hidden">
-			<SelectedDomainsTable selectedIndices={selectedIndices} onSelectIndices={setSelectedIndices} onZoomToIndices={zoomToDomains} openEcodPage={openEcodPage}/>
+			<SelectedDomainsTable
+				selectedIndices={selectedIndices}
+				onSelectIndices={setSelectedIndices}
+				onZoomToIndices={zoomToDomains}
+				openEcodPage={openEcodPage}
+			/>
 		</div>
 	</div>
 </div>

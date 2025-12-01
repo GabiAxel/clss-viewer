@@ -45,6 +45,7 @@ function downloadCSV() {
 					{domains.length} domains
 				{/if}
 			</strong>
+			<Button icon="mdi mdi-image-filter-center-focus-weak" onclick={() => onZoomToIndices(selectedIndices)}>Re-focus</Button>
 			<Button icon="mdi mdi-download" onclick={downloadCSV}>Download</Button>
 			<Button icon="mdi mdi-close" onclick={() => onSelectIndices([])}>Clear</Button>
 		</div>
